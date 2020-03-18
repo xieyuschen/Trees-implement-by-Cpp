@@ -246,7 +246,7 @@ void SetMe<T>::fix_excess(std::size_t i) {
 	//node.data = subset[i]->data + MINIMUM;
 
 	//赋予新的值和子节点的信息
-	for (int j = 0; j < MINIMUM ; j++) {
+	for (int j = 0; j <= MINIMUM ; j++) {
 		node->data[j] = subset[i]->data[MINIMUM + j+1];
 		node->subset[j] = subset[i]->subset[MINIMUM + j];
 	}
