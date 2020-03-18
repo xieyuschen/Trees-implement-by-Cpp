@@ -328,7 +328,7 @@ void SetMe<T>::Show()
 		que.pop();
 		//que.front()!= nullptr&&!que.empty()
 		//À≥–Ú∫‹÷ÿ“™		
-		if (!que.empty() && que.front() != nullptr) {
+		if (!que.empty()&&temp!=nullptr && que.front() != nullptr) {
 			std::cout << "--|||--";
 		}
 	}
