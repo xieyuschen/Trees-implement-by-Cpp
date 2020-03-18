@@ -119,7 +119,8 @@ bool SetMe<T>::loose_insert(const T& entry,std::vector<SetMe<T>*> &vec,std::vect
 {
 	std::size_t i;
 	//获得第一个不小于插入值的元素的索引
-	for (i = 0; entry <= data[i] && i < data_count; i++) {};
+	for (i = 0; entry > data[i] && i < data_count; i++) {};
+	//应该检查索引i与data的关系，如果i和data_count相等就说明是在末尾
 	if (entry == data[i] && i < data_count) { return false; }
 	else if (child_count == 0) {
 		//没有子节点，递归的出口
