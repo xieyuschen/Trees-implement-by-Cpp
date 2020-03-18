@@ -308,9 +308,9 @@ void SetMe<T>::Show()
 	que.push(nullptr);
 	while (!que.empty()) {
 		int i = 0;
-		//auto 为什么出问题？
-		//auto temp = que.front();
-		SetMe<T>* temp = que.front();
+
+		//SetMe<T>* temp = que.front();
+		auto temp = que.front();
 		if (temp == nullptr) {
 			std::cout << std::endl;
 		}
@@ -318,16 +318,19 @@ void SetMe<T>::Show()
 			for (i = 0; i < temp->data_count; i++) {
 				std::cout << temp->data[i] << std::ends;
 			}
-			std::cout << "--|||--";
 			for (i = 0; i < temp->child_count; i++) {
 				que.push(temp->subset[i]);
 				if (i == temp->child_count-1) {
-					//que.push(nullptr);
+					que.push(nullptr);
 				}
 			}
 		}
 		que.pop();
-
+		//que.front()!= nullptr&&!que.empty()
+		//顺序很重要		
+		if (!que.empty() && que.front() != nullptr) {
+			std::cout << "--|||--";
+		}
 	}
 }
 #endif // !SETME_H
