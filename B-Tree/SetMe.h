@@ -17,6 +17,7 @@ public:
 	std::size_t count(const T& target) const;
 	bool empty() const { return (data_count == 0); }
 	//~SetMe();
+	bool loose_remove(const T& entry, std::vector<SetMe<T>*>& path, std::vector<int>& index);
 
 private:
 	static const std::size_t MINIMUM = 200;
@@ -33,13 +34,41 @@ private:
 	int* p;
 	bool loose_insert(const T& entry,std::vector<SetMe<T>*> &vec,std::vector<int>&);
 	bool is_leaf() const { return (child_count == 0); }
-	bool loose_remove(const T& entry);
 	void remove_biggest(T& removed_entry);
 	void fix_excess(std::size_t i);
 	void fix_shortage(std::size_t i);
 };
 template<typename T>
 SetMe<T>::SetMe() :child_count(0), data_count(0) {};
+
+//对this节点进行操作，去掉this的节点或者递归调用别的
+template<typename T>
+bool SetMe<T>::loose_remove(const T& target,std::vector<SetMe<T>*>& path,std::vector<int>& index) {
+	int i = 0;
+	for (i=0; i<data_count && target>data[i]; i++) {};
+	//当找到这个元素，就可以去掉元素了
+	
+	//这个节点无子节点且未找到此元素
+	
+	if ((data[i]!=target||i==data_count) && child_count == 0) {
+		return false;
+	}
+	//有子节点，在当前节点没有找到
+	else if((data[i] != target || i == data_count)&&child_count!=0) {
+		return subset[i]->loose_remove(target, path, index);
+	}
+	//找到了元素
+	else if (i < data_count && data[i] == target) {
+		//集体前移,从被删除的元素往前shift
+		for (int j =i; j<data_count-1; j--) {
+			data[j] = data[j + 1];
+		}
+		--data_count;
+		path.push_back(this);
+		index.push_back(i);
+		return true;
+	}
+}
 
 template<typename T>
 bool SetMe<T>::insert(const T& entry) {
