@@ -308,10 +308,12 @@ void SetMe<T>::Show()
 	que.push(nullptr);
 	while (!que.empty()) {
 		int i = 0;
-
+		int height = 1;
 		//SetMe<T>* temp = que.front();
 		auto temp = que.front();
-		if (temp == nullptr) {
+		que.pop();
+
+		if (temp == nullptr){
 			std::cout << std::endl;
 		}
 		else{
@@ -320,14 +322,10 @@ void SetMe<T>::Show()
 			}
 			for (i = 0; i < temp->child_count; i++) {
 				que.push(temp->subset[i]);
-				if (i == temp->child_count-1) {
-					que.push(nullptr);
-				}
 			}
+			que.push(nullptr);
 		}
-		que.pop();
-		//que.front()!= nullptr&&!que.empty()
-		//À≥–Ú∫‹÷ÿ“™		
+	
 		if (!que.empty()&&temp!=nullptr && que.front() != nullptr) {
 			std::cout << "--|||--";
 		}
