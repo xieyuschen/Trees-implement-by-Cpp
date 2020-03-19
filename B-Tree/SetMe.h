@@ -20,7 +20,6 @@ public:
 	//~SetMe();
 	void fix_shortage(std::size_t i);
 	bool loose_remove(const T& entry, std::vector<SetMe<T>*>& path, std::vector<int>& index);
-
 	void Show();
 private:
 	static const std::size_t MINIMUM = 2;
@@ -45,6 +44,7 @@ SetMe<T>::SetMe() :child_count(0), data_count(0) {};
 
 
 //对this节点进行操作，去掉this的节点或者递归调用别的
+//path直接将根部到叶子全部加了进去
 template<typename T>
 bool SetMe<T>::loose_remove(const T& target,std::vector<SetMe<T>*>& path,std::vector<int>& index) {
 	int i = 0;
@@ -58,6 +58,8 @@ bool SetMe<T>::loose_remove(const T& target,std::vector<SetMe<T>*>& path,std::ve
 	}
 	//有子节点，在当前节点没有找到
 	else if((data[i] != target || i == data_count)&&child_count!=0) {
+		path.push_back(this);
+		index.push_back(i);
 		return subset[i]->loose_remove(target, path, index);
 	}
 	//找到了元素
@@ -77,7 +79,7 @@ bool SetMe<T>::loose_remove(const T& target,std::vector<SetMe<T>*>& path,std::ve
 template<typename T>
 void SetMe<T>::fix_shortage(std::size_t i) {
 	//subset[i]少一个元素，subset[i-1]可以提供一个元素
-	if (subset[i]->data_count == MINIMUM - 1 && subset[i - 1]->data_count > MINIMUM&& i > 0) {
+	if (i > 0&&subset[i]->data_count == MINIMUM - 1 && subset[i - 1]->data_count > MINIMUM) {
 		int j = --subset[i - 1]->data_count;
 		T temp = data[i - 1];
 		data[i - 1] = subset[i - 1]->data[j];
@@ -88,13 +90,15 @@ void SetMe<T>::fix_shortage(std::size_t i) {
 		}
 		subset[i]->data[0] = temp;
 	}
-	else if (subset[i]->data_count == MINIMUM - 1 && subset[i + 1]->data_count > MINIMUM&& i < child_count - 1) {
-		int& j = subset[i]->data_count;
+	else if (i == 0&&subset[i]->data_count == MINIMUM - 1 && subset[i + 1]->data_count > MINIMUM) {
+		std::size_t& j = subset[i]->data_count;
 		subset[i]->data[j++] = data[i];
 		data[i] = subset[i + 1]->data[0];
 
 		for (int m = 0; m < subset[i + 1]->data_count - 1; m++) {
-			subset[i + 1]->data_count[m] = subset[i + 1]->data_count[m + 1];
+			//subset[i + 1]->data_count[m] = subset[i + 1]->data_count[m + 1];
+			subset[i + 1]->data[m] = subset[i + 1]->data[m + 1];
+
 		}
 		--subset[i + 1]->data_count;
 	}
@@ -125,7 +129,7 @@ void SetMe<T>::fix_shortage(std::size_t i) {
 		}
 		subset[i]->child_count = 0;
 		//移动this的subset
-		for (int j = i; j < child_count; j++) {
+		for (int j = i; j <child_count-1; j++) {
 			subset[j] = subset[j + 1];
 		}
 		subset[i - 1]->child_count += childsize2;
@@ -156,6 +160,7 @@ void SetMe<T>::fix_shortage(std::size_t i) {
 		for (j = 0; j < childsize2; j++) {
 			subset[0]->subset[childsize1 + j] = subset[1]->subset[j];
 		}
+		delete subset[1];
 		for (j = 1; j < child_count-1; j++) {
 			subset[j] = subset[j + 1];
 		}
@@ -164,7 +169,6 @@ void SetMe<T>::fix_shortage(std::size_t i) {
 		subset[0]->data_count += (len2 + 1);
 		subset[0]->child_count += childsize2;
 
-		delete subset[1];
 	}
 	else {}
 }
@@ -302,8 +306,7 @@ bool SetMe<T>::loose_insert(const T& entry,std::vector<SetMe<T>*> &vec,std::vect
 template<typename T>
 void SetMe<T>::Show()
 {
-	std::queue<SetMe<T>*> que;
-	
+	std::queue<SetMe<T>*> que;	
 	que.push(this);
 	que.push(nullptr);
 	while (!que.empty()) {
