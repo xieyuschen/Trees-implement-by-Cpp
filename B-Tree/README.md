@@ -52,3 +52,6 @@ for (j = 1; j < child_count-1; j++) {
 }
 delete subset[1];
 ```
+所以先删除指针再进行移位覆盖即可。
+
+# size_t是无符号类型！循环的时候不要用size_t

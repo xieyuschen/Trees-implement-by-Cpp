@@ -14,12 +14,11 @@ public:
 	SetMe(const SetMe& source);
 	SetMe operator=(const SetMe& source);
 	bool insert(const T& source);
-	std::size_t erase(const T& target);
+	std::size_t size() const;
 	std::size_t count(const T& target) const;
 	bool empty() const { return (data_count == 0); }
 	//~SetMe();
-	void fix_shortage(std::size_t i);
-	bool loose_remove(const T& entry, std::vector<SetMe<T>*>& path, std::vector<int>& index);
+	void erase(const T& target);
 	void Show();
 private:
 	static const std::size_t MINIMUM = 2;
@@ -35,14 +34,110 @@ private:
 	SetMe<T>* subset[MAXIMUM + 2];
 	bool loose_insert(const T& entry,std::vector<SetMe<T>*> &vec,std::vector<int>&);
 	bool is_leaf() const { return (child_count == 0); }
-	void remove_biggest(T& removed_entry);
+	T remove_biggest();
 	void fix_excess(std::size_t i);
+	void fix_shortage(std::size_t i);
+	bool loose_remove(const T& entry, std::vector<SetMe<T>*>& path, std::vector<int>& index);
 };
+template<typename T>
+std::size_t SetMe<T>::count(const T& target) const {
+	int i = 0;
+	for (i = 0; i<data_count && target>data[i]; i++) {};
+
+	if ((data[i] != target || i == data_count) && child_count == 0) {
+		return 0;
+	}
+	//有子节点，在当前节点没有找到
+	else if ((data[i] != target || i == data_count) && child_count != 0) {
+
+		return subset[i]->count(target);
+	}
+	//找到了元素
+	else if (i < data_count && data[i] == target) {
+
+		return target;
+	}
+}
+
+template<typename T>
+std::size_t SetMe<T>::size() const{
+	std::size_t i = 0;
+	if(child_count==0){
+		return data_count;
+	}
+	else {
+		i += data_count;
+		for (int j = 0; j < child_count; j++) {
+			i += subset[j]->count();
+		}
+		return i;
+	}
+}
 template<typename T>
 SetMe<T>::SetMe() :child_count(0), data_count(0) {};
 
+template<typename T>
+void SetMe<T>::erase(const T& target) {
+	std::vector<SetMe<T>*> path;
+	std::vector<int> index;
+	bool flag = false;
+	T value;
+	if (loose_remove(target, path, index)) {
 
+		//因为调整根部元素数量为零
+		if (data_count == 0 && child_count == 1) {
+			//this指针不是左值
+			this->child_count = subset[0]->child_count;
+			this->data_count = subset[0]->data_count;
+			int i = 0;
 
+			//一定要注意赋值的值是否被覆盖
+			//这里如果使用拷贝构造函数就简单的要命了，不需要写这么多东西了
+			auto temp = subset[0];
+			for (i = 0; i < child_count; i++) {
+				this->subset[i] = temp->subset[i];
+			}
+			for (i = 0; i < data_count; i++) {
+				this->data[i] = temp->data[i];
+			}
+			delete temp;
+		}
+		//直接去掉了顶部元素
+		else if (data_count == 0 && child_count == 2) {
+			value = subset[0]->remove_biggest();
+			data_count = 1;
+			data[0] = value;
+			flag = true;
+		}
+		else {}
+
+		std::size_t len = path.size();
+		for (int a = len-2;0<=a; a--) {
+			path[a]->fix_shortage(index[a]);
+		}
+	}
+	if (flag) {
+		path.clear();
+		index.clear();
+		path.push_back(this);
+		index.push_back(0);
+		subset[0]->loose_remove(value, path, index);
+		std::size_t len = path.size();
+		for (int a = len - 2; 0 <= a; a--) {
+			path[a]->fix_shortage(index[a]);
+		}
+	}
+}
+template<typename T>
+T SetMe<T>::remove_biggest() {
+	int i = data_count;
+	if (child_count == 0) {
+		return data[i - 1];
+	}
+	else {
+		return subset[child_count - 1]->remove_biggest();
+	}
+}
 //对this节点进行操作，去掉this的节点或者递归调用别的
 //path直接将根部到叶子全部加了进去
 template<typename T>
@@ -128,16 +223,18 @@ void SetMe<T>::fix_shortage(std::size_t i) {
 			subset[i]->subset[j] = nullptr;
 		}
 		subset[i]->child_count = 0;
+		//需要释放节点,使用智能指针会更方便
+		delete subset[i];
 		//移动this的subset
 		for (int j = i; j <child_count-1; j++) {
 			subset[j] = subset[j + 1];
 		}
+
 		subset[i - 1]->child_count += childsize2;
 		subset[i - 1]->data_count += (len2+1);
 		--child_count;
 
-		//需要释放节点,使用智能指针会更方便
-		delete subset[i];
+
 	}
 	//节点在最左边，属于左边少一个元素
 	else if (i == 0 && subset[i]->data_count == MINIMUM - 1) {
