@@ -141,6 +141,7 @@
     <ClInclude Include="SetMe.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Constructor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
