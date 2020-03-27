@@ -73,12 +73,12 @@ private:
 	T data;
 };
 
-int main() {
-	listMe<int> list(0);
-	for (int i = 1; i < 10; i++) {
-		list.Add(i);
-	}
-	listMe<int> copy=list;
-	list[4] = 1000;
-	copy.Show();
-}
+//int main() {
+//	listMe<int> list(0);
+//	for (int i = 1; i < 10; i++) {
+//		list.Add(i);
+//	}
+//	listMe<int> copy=list;
+//	list[4] = 1000;
+//	copy.Show();
+//}

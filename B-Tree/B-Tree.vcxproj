@@ -138,9 +138,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BinarySearchTree.h" />
     <ClInclude Include="SetMe.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BinarySeachTree.cpp" />
     <ClCompile Include="Constructor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
