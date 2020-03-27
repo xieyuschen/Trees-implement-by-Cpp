@@ -139,6 +139,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinarySearchTree.h" />
+    <ClInclude Include="DemoBSTree.h" />
     <ClInclude Include="SetMe.h" />
   </ItemGroup>
   <ItemGroup>
