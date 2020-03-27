@@ -4,15 +4,21 @@
 class Node
 {
 public:
-	Node(int val=0) :value(val), left(nullptr), right(nullptr) {};
-	Node(const Node& rhs):value(rhs.value),left(rhs.left),right(rhs.right) {}
+	Node(int val=0) :value(val), left(nullptr), right(nullptr),count(new int(1)) {};
+	Node(const Node& rhs):value(rhs.value),left(rhs.left),right(rhs.right),count(new int(1)) {}
 	Node& operator=(const Node& rhs) {
+		count++;
 		*this=Node(rhs);
 		return *this;
 	}
-	~Node() = default;
+	~Node() {
+		if (!count--) {
+			left = right = nullptr;
+		}
+	}
 public:
 	int value;
+	int* count;
 	Node* left;
 	Node* right;
 };
@@ -28,6 +34,12 @@ public:
 	}
 	bool empty();
 	bool Add(const int&);
+	bool Remove(const int&);
+
+private:
+	bool Isleft(Node*,Node*);
+	Node* findMin(Node*);
+	Node* findMax(Node*);
 private:
 	size_t size;
 	Node* root;

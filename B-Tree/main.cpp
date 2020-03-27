@@ -4,10 +4,12 @@
 #include<set>
 using namespace std;
 int main() {
-	Bstree t{ 1,2,3,4,5 };
+	Bstree t{ 3,1,2,4,5 };
 	cout << t.empty() << endl;;
-	for (int i = 0; i < 10; i++) {
-		cout << t.Add(i)<<ends;
+	for (int i = 1; i < 6; i++) {
+		cout << t.Remove(i);
+
 	}
+
 
 }
