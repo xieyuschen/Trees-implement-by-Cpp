@@ -177,12 +177,7 @@ private:
             ;  // Duplicate; do nothing
     }
 
-    /**
-     * Internal method to insert into a subtree.
-     * x is the item to insert.
-     * t is the node that roots the subtree.
-     * Set the new root of the subtree.
-     */
+    //这里的引用真的是天秀！！
     void insert(Comparable&& x, BinaryNode*& t)
     {
         if (t == nullptr)

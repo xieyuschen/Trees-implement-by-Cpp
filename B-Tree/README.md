@@ -235,8 +235,57 @@ BinarySearchTree& operator=(BinarySearchTree&& rhs)
 - 析构函数：  
 递归大法好，首先明确节点都是动态分配的，所以在析构的时候要进行释放。所以这就好写了。然后记得写打工函数！！！因为这些打工函数还可以在别的地方被重用，写在析构函数里面一大坨然后再别的地方要用
 
-### BinarySearchTree 的成员函数：
-#### 概述：
+### BinarySearchTree 的insert函数：
+首先insert直接调用打工函数，打工函数通过递归来完成插入结点的使命：  
+- 这里有个很nb的地方，在我写代码的时候认为这一点是不能直接实现的所以**写了很多代码来弥补我设计思路上的漏洞**。这个思路漏洞很有意思，没有想到也正常，放到这里来专门分析一下：  
+在查找到需要在哪里插入节点的时候，首先我找到了该插入位置的父节点，那么怎么样插入同时进行修改父节点的指针。
+因为我使用非递归的做法，那么我首先找到插入的父节点，然后比较大小判断应该插入到左/右节点。然后动态分配修改指针就可以了。那么递归怎么办，返回两个值？
+- 这里就使用了指针的引用，因为指针类型也是一种变量，所以也可以用引用。
+```cpp
+
+void insert(T&& x, BinaryNode*& t)
+{
+	if (t == nullptr)
+		t = new BinaryNode{ std::move(x), nullptr, nullptr };
+	else if (x < t->element)
+		insert(std::move(x), t->left);
+	else if (t->element < x)
+		insert(std::move(x), t->right);
+	else
+		;  // Duplicate; do nothing
+}
+```
+
+### Remove函数：
+嗯这代码写的真的是赏心悦目，必须放上来。我写的真的是太丑陋了！  
+思路很简单，嗯是这样的。
+```cpp
+void remove(const Comparable& x, BinaryNode*& t)
+{
+	if (t == nullptr)
+		return;   // Item not found; do nothing
+	if (x < t->element)
+		remove(x, t->left);
+	else if (t->element < x)
+		remove(x, t->right);
+	
+	//t->element==x 为真
+	else if (t->left != nullptr && t->right != nullptr) // Two children
+	{
+		t->element = findMin(t->right)->element;
+		remove(t->element, t->right);
+	}
+	else
+	{
+		BinaryNode* oldNode = t;
+		t = (t->left != nullptr) ? t->left : t->right;
+		delete oldNode;
+	}
+}
+```
+
+
+### 总结概述：
 在树结构里，递归是一个非常重要的思想，啥东西不要光想着用循环。自己写的代码过于垃圾一堆if-else的主要问题就是妄图通过循环解决一个每次循环都高度相似的问题，这种情况是典型的递归解法更优更好。这次是个很典型的反面教材。  
 想要使用递归的思路，就多使用打工函数，不要把东西一股脑全部写到一个函数里面去。
 
@@ -253,3 +302,8 @@ const Comparable& findMin() const
 
 #### 递归的思想：
 全部要使用递归，使用递归异常简单。。设计思路的问题。
+
+# AVL Tree
+AVL树的大部分内容和二叉搜索树是一样的，所以说这里写的时候正好复习一下今天的学习成果，然后再加上新的检验深度的函数就可以了。  
+所以说问题就来了，如何检测这棵树是否均衡？  
+——

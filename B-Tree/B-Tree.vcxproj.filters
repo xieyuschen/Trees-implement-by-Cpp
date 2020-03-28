@@ -27,6 +27,9 @@
     <ClInclude Include="DemoBSTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AVLTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
