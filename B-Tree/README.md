@@ -180,5 +180,56 @@ delete subset[1];
 # Binary Search Tree
 ## 3.27重写概述：
 - 二叉搜索树我之前是写过的，今天又写了一遍，我写的代码是真的丑啊啊啊啊！！  
-- 主要是Remove函数的条件筛选，我觉得我犯的错误是没有认真思考如何设置可以减少条件检查。把之前自己写的（基本上算是照着教材抄来）代码放进来比较一下，命名为`DemoBSTree`...   
+- 主要是Remove函数的条件筛选，我觉得我犯的错误是没有认真思考如何设置可以减少条件检查。把之前自己写的（基本上算是照着教材抄来）代码放进来比较一下，命名为`lastBSTree`...   
 - 嗯。。demo也有很大的问题，我要吐了，明天对比一下教材给的代码好好的学习一下。自己重写一遍什么神仙问题都能检查出来。写错了就是写错了，不可能蒙混过关的。。。
+
+## 学习DemoBstree
+这个是真的Demo(滑稽,作者所提供的源代码。[源码网页在这里!](http://users.cis.fiu.edu/~weiss/dsaa_c++4/code/).  
+好好看看别人是怎么设计的吧。。代码真的写得稀烂。 :)
+
+### 二叉树的节点设置
+#### 二叉树的节点写在private里面去
+我设计的时候把Node类作为独立的一个类进行设计了，但是这样没有起到良好的封装性，Node是不需要暴漏给用户的，我不需要让用户知道有这个东西。所以直接在类的私有变量中声明节点信息就很棒，作为类的类型成员。  
+- 如果这个类型成员是public的话，我们还可以访问它并定义一个变量：  
+```cpp
+//前提是在类中声明的class BinaryNode 是public的
+BinarySearchTree<int>::BinaryNode node;
+```
+
+#### 二叉树节点的构造函数：
+以下两个构造函数，第二个右值引用是为了更好的绑定右值。
+```cpp
+BinaryNode(const Comparable& theElement, BinaryNode* lt, BinaryNode* rt)
+BinaryNode(Comparable&& theElement, BinaryNode* lt, BinaryNode* rt)
+```
+
+- 没有写拷贝构造函数，说明使用默认的拷贝构造函数。
+- 没有需要析构函数专门析构的资源
+
+### BinarySearchTree 的构造函数们
+- 构造函数：直接把root赋值为nullptr表示空就完事了。
+- 拷贝构造函数：具有值行为的类，动态分配每个节点都要分配新内存。记得写个打工函数。
+- 移动构造函数，把根节点交了就行了(你把你根节点给我交了！).
+- 拷贝赋值运算符：  
+这个代码写得太好了，放到这里！！  
+1. 创建一个局部变量，注意这里的=其实是初始化的方式，并不是进行拷贝
+2. 将创建的这个值与copy进行交换，依此交换对应的资源，因为没有特殊的交换需求，所以没有给Node定义自己版本的swap函数。
+3. 交换后返回*this就可以了
+```cpp
+BinarySearchTree& operator=(const BinarySearchTree& rhs)
+{
+	BinarySearchTree copy = rhs;
+	std::swap(*this, copy);
+	return *this;
+}
+```
+- 移动赋值运算符：
+注意移动赋值运算符和拷贝赋值运算符swap的对象是不太一样的，因为移动之后右值引用的值是不应该被期待的，所以我直接swap rhs的根元素就可以了。
+```cpp
+BinarySearchTree& operator=(BinarySearchTree&& rhs)
+{
+	std::swap(root, rhs.root);
+	return *this;
+}
+```
+- 析构函数：递归大法好，首先明确节点都是动态分配的，所以在析构的时候要进行释放。所以这就好写了。然后记得写打工函数！！！因为这些打工函数还可以在别的地方被重用，写在析构函数里面一大坨然后再别的地方要用

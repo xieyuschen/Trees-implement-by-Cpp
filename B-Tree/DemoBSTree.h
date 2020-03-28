@@ -1,234 +1,321 @@
+#ifndef BINARY_SEARCH_TREE_H
 #define BINARY_SEARCH_TREE_H
-#ifdef  BINARY_SEARCH_TREE_H
-#include<iostream>
-#include<iomanip>
-#include<vector>
+//Demo provided by author from
+//http://users.cis.fiu.edu/~weiss/dsaa_c++4/code/
+//#include "dsexceptions.h"
+#include <algorithm>
 using namespace std;
-template<typename T>
-class Node {
+
+// BinarySearchTree class
+//
+// CONSTRUCTION: zero parameter
+//
+// ******************PUBLIC OPERATIONS*********************
+// void insert( x )       --> Insert x
+// void remove( x )       --> Remove x
+// bool contains( x )     --> Return true if x is present
+// Comparable findMin( )  --> Return smallest item
+// Comparable findMax( )  --> Return largest item
+// boolean isEmpty( )     --> Return true if empty; else false
+// void makeEmpty( )      --> Remove all items
+// void printTree( )      --> Print tree in sorted order
+// ******************ERRORS********************************
+// Throws UnderflowException as warranted
+
+template <typename Comparable>
+class BinarySearchTree
+{
 public:
-	T _key;
-	Node<T>* _left;
-	Node<T>* _right;
-	Node<T>* _parent;
-	Node(const T& key) :_key(key), _left(nullptr), _right(nullptr), _parent(nullptr) {}
-};
+    BinarySearchTree() : root{ nullptr }
+    {
+    }
+
+    BinarySearchTree(const BinarySearchTree& rhs) : root{ nullptr }
+    {
+        root = clone(rhs.root);
+    }
+
+    BinarySearchTree(BinarySearchTree&& rhs) : root{ rhs.root }
+    {
+        rhs.root = nullptr;
+    }
+
+    ~BinarySearchTree()
+    {
+        makeEmpty();
+    }
+
+    BinarySearchTree& operator=(const BinarySearchTree& rhs)
+    {
+        BinarySearchTree copy = rhs;
+        std::swap(*this, copy);
+        return *this;
+    }
+
+    BinarySearchTree& operator=(BinarySearchTree&& rhs)
+    {
+        std::swap(root, rhs.root);
+        return *this;
+    }
 
 
-template<typename T>
-class BSTree {
-	typedef Node<T> Node;
+    /**
+     * Find the smallest item in the tree.
+     * Throw UnderflowException if empty.
+     */
+    const Comparable& findMin() const
+    {
+        if (isEmpty())
+            throw UnderflowException{ };
+        return findMin(root)->element;
+    }
+
+    /**
+     * Find the largest item in the tree.
+     * Throw UnderflowException if empty.
+     */
+    const Comparable& findMax() const
+    {
+        if (isEmpty())
+            throw UnderflowException{ };
+        return findMax(root)->element;
+    }
+
+    /**
+     * Returns true if x is found in the tree.
+     */
+    bool contains(const Comparable& x) const
+    {
+        return contains(x, root);
+    }
+
+    /**
+     * Test if the tree is logically empty.
+     * Return true if empty, false otherwise.
+     */
+    bool isEmpty() const
+    {
+        return root == nullptr;
+    }
+
+    /**
+     * Print the tree contents in sorted order.
+     */
+    void printTree(ostream& out = cout) const
+    {
+        if (isEmpty())
+            out << "Empty tree" << endl;
+        else
+            printTree(root, out);
+    }
+
+    /**
+     * Make the tree logically empty.
+     */
+    void makeEmpty()
+    {
+        makeEmpty(root);
+    }
+
+    /**
+     * Insert x into the tree; duplicates are ignored.
+     */
+    void insert(const Comparable& x)
+    {
+        insert(x, root);
+    }
+
+    /**
+     * Insert x into the tree; duplicates are ignored.
+     */
+    void insert(Comparable&& x)
+    {
+        insert(std::move(x), root);
+    }
+
+    /**
+     * Remove x from the tree. Nothing is done if x is not found.
+     */
+    void remove(const Comparable& x)
+    {
+        remove(x, root);
+    }
+
+
 private:
-	Node* Troot;
-public:
-	//写的代码出问题主要原因即构造函数没有写好
-	//对NULL
-	BSTree() :Troot(NULL) {}
-	bool empty() {
-		if (Troot == NULL)
-			return true;
-		else return false;
-	}
-	bool insert(T val) {
+    struct BinaryNode
+    {
+        Comparable element;
+        BinaryNode* left;
+        BinaryNode* right;
 
-		Node* neu = new Node(val);
-		if (empty())
-		{
-			Troot = neu;
-			return true;
-		}
-		Node* p = Troot;
-		Node* temp = nullptr;
-		while (p) {
-			temp = p;
-			if (val < p->_key)
-				p = p->_left;
-			else if (val > p->_key) p = p->_right;
-			else return false;
-		}
-		if (temp->_key > val) {
-			temp->_left = neu;
-			neu->_parent = temp;
-		}
-		else if (temp->_key < val) {
-			temp->_right = neu;
-			neu->_parent = temp;
-		}
-		else return false;
-		return true;
+        BinaryNode(const Comparable& theElement, BinaryNode* lt, BinaryNode* rt)
+            : element{ theElement }, left{ lt }, right{ rt } { }
+
+        BinaryNode(Comparable&& theElement, BinaryNode* lt, BinaryNode* rt)
+            : element{ std::move(theElement) }, left{ lt }, right{ rt } { }
+    };
+
+    BinaryNode* root;
 
 
-	}
-	Node* Max() {
-		return HelpMax(Troot);
-	}
-	Node* Min() {
-		return HelpMin(Troot);
-	}
+    /**
+     * Internal method to insert into a subtree.
+     * x is the item to insert.
+     * t is the node that roots the subtree.
+     * Set the new root of the subtree.
+     */
+    void insert(const Comparable& x, BinaryNode*& t)
+    {
+        if (t == nullptr)
+            t = new BinaryNode{ x, nullptr, nullptr };
+        else if (x < t->element)
+            insert(x, t->left);
+        else if (t->element < x)
+            insert(x, t->right);
+        else
+            ;  // Duplicate; do nothing
+    }
 
-	bool Search(T val) {
-		Node* p = Troot;
-		Node* temp = nullptr;
-		while (p) {
-			if (val < p->_key) {
-				p = p->_left;
-			}
-			else if (val > p->_key) {
-				p = p->_right;
-			}
-			else return true;
-		}
-		return false;
-	}
-	void Preorder() {
-		HelpPreorder(Troot);
-		cout << endl;
+    /**
+     * Internal method to insert into a subtree.
+     * x is the item to insert.
+     * t is the node that roots the subtree.
+     * Set the new root of the subtree.
+     */
+    void insert(Comparable&& x, BinaryNode*& t)
+    {
+        if (t == nullptr)
+            t = new BinaryNode{ std::move(x), nullptr, nullptr };
+        else if (x < t->element)
+            insert(std::move(x), t->left);
+        else if (t->element < x)
+            insert(std::move(x), t->right);
+        else
+            ;  // Duplicate; do nothing
+    }
 
-	}
-	void Inorder() {
-		HelpInorder(Troot);
-		cout << endl;
+    /**
+     * Internal method to remove from a subtree.
+     * x is the item to remove.
+     * t is the node that roots the subtree.
+     * Set the new root of the subtree.
+     */
+    void remove(const Comparable& x, BinaryNode*& t)
+    {
+        if (t == nullptr)
+            return;   // Item not found; do nothing
+        if (x < t->element)
+            remove(x, t->left);
+        else if (t->element < x)
+            remove(x, t->right);
+        else if (t->left != nullptr && t->right != nullptr) // Two children
+        {
+            t->element = findMin(t->right)->element;
+            remove(t->element, t->right);
+        }
+        else
+        {
+            BinaryNode* oldNode = t;
+            t = (t->left != nullptr) ? t->left : t->right;
+            delete oldNode;
+        }
+    }
 
-	}
-	void Postorder() {
-		HelpPostorder(Troot);
-		cout << endl;
-	}
+    /**
+     * Internal method to find the smallest item in a subtree t.
+     * Return node containing the smallest item.
+     */
+    BinaryNode* findMin(BinaryNode* t) const
+    {
+        if (t == nullptr)
+            return nullptr;
+        if (t->left == nullptr)
+            return t;
+        return findMin(t->left);
+    }
 
-	//the min node in the right subtree
-	Node* Successor(Node* x) {
-		if (x->_right) {
-			return HelpMin(x->_right);
-		}
-	}
-
-	//the max node in the left subtree
-	Node* Processor(Node* x) {
-		if (x->_left) {
-			return HelpMax(x->_left);
-		}
-	}
-	void Remove(Node* x) {
-		if (!(x->_left) && !(x->_right)) {
-			if (x->_parent->_right == x)  x->_parent->_right = nullptr;
-			else	x->_parent->_left = nullptr;
+    /**
+     * Internal method to find the largest item in a subtree t.
+     * Return node containing the largest item.
+     */
+    BinaryNode* findMax(BinaryNode* t) const
+    {
+        if (t != nullptr)
+            while (t->right != nullptr)
+                t = t->right;
+        return t;
+    }
 
 
-		}
-		else if (x->_left || x->_right) {
-			if (x->_left) {
-				x->_left->_parent = x->_parent;
-				x->_parent->_left = x->_left;
-				x = nullptr;
-			}
-			else {
-				x->_left->_parent = x->_parent;
-				x->_parent->_right = x->_right;
-				x = nullptr;
-			}
-		}
-		else {
-			auto temp = Successor(x);
-			x = temp;
-			Remove(temp);
-		}
-	}
+    /**
+     * Internal method to test if an item is in a subtree.
+     * x is item to search for.
+     * t is the node that roots the subtree.
+     */
+    bool contains(const Comparable& x, BinaryNode* t) const
+    {
+        if (t == nullptr)
+            return false;
+        else if (x < t->element)
+            return contains(x, t->left);
+        else if (t->element < x)
+            return contains(x, t->right);
+        else
+            return true;    // Match
+    }
+    /****** NONRECURSIVE VERSION*************************
+        bool contains( const Comparable & x, BinaryNode *t ) const
+        {
+            while( t != nullptr )
+                if( x < t->element )
+                    t = t->left;
+                else if( t->element < x )
+                    t = t->right;
+                else
+                    return true;    // Match
 
-	void PrintFigure() {
-		int Height = GetHeight(Troot);
-		vector<T>vec;
-		for (int i = 0; i < Height; i++) {
-			cout << setw(2 * (Height - i));
-			printRow(Troot, Height, i);
-		}
-	}
-private:
-	void HelpPreorder(Node* root) {
-		if (root) {
-			cout << root->_key << ends;
-			HelpPreorder(root->_left);
-			HelpPreorder(root->_right);
-		}
+            return false;   // No match
+        }
+    *****************************************************/
 
-	}
-	void HelpInorder(Node* root) {
-		if (root) {
-			HelpInorder(root->_left);
-			cout << root->_key << ends;
-			HelpInorder(root->_right);
-		}
-	}
-	void HelpPostorder(Node* root) {
-		if (root) {
-			HelpPostorder(root->_left);
-			HelpPostorder(root->_right);
-			cout << root->_key << ends;
+    /**
+     * Internal method to make subtree empty.
+     */
+    void makeEmpty(BinaryNode*& t)
+    {
+        if (t != nullptr)
+        {
+            makeEmpty(t->left);
+            makeEmpty(t->right);
+            delete t;
+        }
+        t = nullptr;
+    }
 
-		}
-	}
-	Node* HelpSuccessor(Node* x) {
-		if (x->_left) {
-			x = x->_left;
-		}
-	}
-	Node* HelpMax(Node* root) {
-		Node* p = root;
-		Node* temp = nullptr;
-		while (p) {
-			temp = p;
-			p = p->_right;
-		}
-		return temp;
-	}
-	Node* HelpMin(Node* root) {
-		Node* p = root;
-		Node* temp = nullptr;
-		while (p) {
-			temp = p;
-			p = p->_left;
-		}
-		return  temp;
-	}
-	int GetHeight(Node* x) {
-		int Height = 0;
-		if (x) {
-			Height = GetHeight(x->_left) < GetHeight(x->_right) ? GetHeight(x->_right) + 1 : GetHeight(x->_left) + 1;
-		}
-		return Height;
-	}
-	void HelpPrintFigure(Node* x) {
+    /**
+     * Internal method to print a subtree rooted at t in sorted order.
+     */
+    void printTree(BinaryNode* t, ostream& out) const
+    {
+        if (t != nullptr)
+        {
+            printTree(t->left, out);
+            out << t->element << endl;
+            printTree(t->right, out);
+        }
+    }
 
-	}
-	void GetRowNodeKey(const Node* root, int depth, vector<T>& vals) {
-		int placeholder = -1;
-		if (depth <= 0 && root != NULL) {
-			vals.push_back(root->_key);
-			return;
-		}
-		if (root->_left)
-			GetRowNodeKey(root->_left, depth - 1, vals);
-		else if (depth - 1 <= 0)
-			vals.push_back(placeholder);
-		if (root->_right)
-			GetRowNodeKey(root->_right, depth - 1, vals);
-		else if (depth - 1 <= 0)
-			vals.push_back(placeholder);
-	}
-	void printRow(const Node* p, const int height, int depth) {
-		vector<T> vec;
-		//int placeholder = -1;
-		GetRowNodeKey(p, depth, vec);
-		// start with left
-		int j = height;
-		for (int i = 0; i < vec.size(); i++) {
-			if (vec[i] != -1) {
-				cout << vec[i] << ends;
-			}
-			else cout << "#" << ends;
-		}
-		cout << endl << setw(height - j);
-	}
-
+    /**
+     * Internal method to clone subtree.
+     */
+    BinaryNode* clone(BinaryNode* t) const
+    {
+        if (t == nullptr)
+            return nullptr;
+        else
+            return new BinaryNode{ t->element, clone(t->left), clone(t->right) };
+    }
 };
 
 #endif

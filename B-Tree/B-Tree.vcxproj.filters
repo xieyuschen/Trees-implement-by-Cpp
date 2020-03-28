@@ -21,6 +21,9 @@
     <ClInclude Include="BinarySearchTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lastBSTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="DemoBSTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>

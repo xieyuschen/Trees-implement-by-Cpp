@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="BinarySearchTree.h" />
     <ClInclude Include="DemoBSTree.h" />
+    <ClInclude Include="lastBSTree.h" />
     <ClInclude Include="SetMe.h" />
   </ItemGroup>
   <ItemGroup>
