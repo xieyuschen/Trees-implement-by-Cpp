@@ -10,8 +10,10 @@ private:
 	struct Node
 	{
 		int value;
+		int height;
 		Node* left;
 		Node* right;
+
 	};
 };
 
