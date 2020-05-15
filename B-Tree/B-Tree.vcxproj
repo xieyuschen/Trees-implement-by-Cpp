@@ -138,15 +138,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AvlDemo.h" />
     <ClInclude Include="AVLTree.h" />
-    <ClInclude Include="BinarySearchTree.h" />
-    <ClInclude Include="DemoBSTree.h" />
-    <ClInclude Include="lastBSTree.h" />
-    <ClInclude Include="SetMe.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BinarySeachTree.cpp" />
-    <ClCompile Include="Constructor.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

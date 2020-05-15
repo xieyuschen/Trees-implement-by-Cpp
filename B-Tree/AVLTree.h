@@ -13,7 +13,6 @@ private:
 		int height;
 		Node* left;
 		Node* right;
-
 	};
 };
 
