@@ -140,7 +140,6 @@
   <ItemGroup>
     <ClInclude Include="AVLTree.h" />
     <ClInclude Include="BinarySearchTree.h" />
-    <ClInclude Include="DemoAVLTree.h" />
     <ClInclude Include="DemoBSTree.h" />
     <ClInclude Include="lastBSTree.h" />
     <ClInclude Include="SetMe.h" />
