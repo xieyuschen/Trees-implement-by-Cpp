@@ -118,20 +118,20 @@ int main() {
 # B-Tree
 ## insert方法的一些记录：
 
- <img src="./Images/1.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="./Images/2.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="./Images/3.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="./Images/4.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="./Images/5.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="./Images/6.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/1.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/2.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/3.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/4.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/5.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/6.jpg" width = "300" height = "400" alt="图片名称" align=center />
 
 ## remove
 记录remove的一些思路：  
 --    
- <img src="Images/remove1.jpg" width = "300" height = "400" alt="图片名称" align=center />
- <img src="Images/remove2.jpg" width = "300" height = "400" alt="图片名称" align=center /> 
+ <img src="./B-Tree/Images/remove1.jpg" width = "300" height = "400" alt="图片名称" align=center />
+ <img src="./B-Tree/Images/remove2.jpg" width = "300" height = "400" alt="图片名称" align=center /> 
 
-<img src="Images/remove3.jpeg" width = "300" height = "400" alt="图片名称" align=center />  
+<img src="./B-Tree/Images/remove3.jpeg" width = "300" height = "400" alt="图片名称" align=center />  
 
 
 
@@ -139,8 +139,8 @@ int main() {
 ----
 测试的时候各种问题都会出现，记录一些测试心得在这里。  
 ----
- <img src="Images/remove4.jpeg" width = "300" height = "400" alt="图片名称" align=center /> 
-  <img src="Images/remove5.jpeg" width = "300" height = "400" alt="图片名称" align=center />  
+ <img src="./B-Tree/Images/remove4.jpeg" width = "300" height = "400" alt="图片名称" align=center /> 
+  <img src="./B-Tree/Images/remove5.jpeg" width = "300" height = "400" alt="图片名称" align=center />  
 
 
 
