@@ -1,121 +1,3 @@
-# 资源控制：
-关于构造函数，拷贝移动构造函数和析构函数的使用方法：
-注意指针对象，是否需要动态分配？
-
-## 内置类型：
-```cpp
-
-/*
-这里使用了动态分配内置类型成员，也就是说动态分配int类型变量，那么分配的时候发生了什么呢？
-在创建对象的时候我需要调用这个类的构造函数，但这里是内置类型所以不需要有构造函数，
-编译器自动帮助我们创建。使用动态分配只是把内存分配在堆上，而不是栈上
-*/
-class line{
-public:
-  line(int* ptr=nullptr){
-    p=new int;
-    p=ptr;
-  }
-  ~line(){
-    delete p;
-  }
-  line(const line& org){
-    p=new int;
-    *p=*org.p;
-  }
-private:
-  int* p;
-}
-/*
-*/
-```
-
-
-## 自定义类型
-```cpp
-#include<iostream>
-#include<time.h>
-using namespace std;
-template<typename T>
-class listMe {
-public:
-	listMe(T val=0, listMe* c=nullptr):data(val){
-		if (c != nullptr) {
-			child = new listMe(0,nullptr);
-			child = c;
-		}
-		else {
-			child = c;
-		}
-	};
-	listMe(const listMe& org) {
-		if (org.child != nullptr) {
-			child = new listMe();
-			*child = *org.child;
-		}
-		else
-		{
-			child = nullptr;
-		}
-		data = org.data;
-	}
-	~listMe() {
-
-	}
-	T& operator[](size_t i) {
-		T temp=data;
-		listMe* p = this;
-		for (size_t j = 0; j < i; j++) {
-			if (p->child == nullptr) {
-				cout << "Out of range!" << endl;
-				break;
-			}
-			else
-			{
-				temp = p->data;
-				p = p->child;
-			}
-		}
-		return temp;
-	}
-	void Show() {
-		cout << data << ends;
-		if(child != nullptr) {
-			child->Show();
-		}
-	}
-	void Add(T val) {
-		if (child == nullptr) {
-			listMe* p = new listMe(val);
-			child = p;
-		}
-		else
-		{
-			child->Add(val);
-		}
-	}
-	void swap(listMe& n1, listMe& n2) {
-		std::swap(n1.data, n2.data);
-		std::swap(n1.child, n2.child);
-	}
-private:
-	listMe<T>* child;
-	T data;
-};
-
-int main() {
-  //main函数中，只会调用两个析构函数，在Add方法中加上去的都不需要调用析构函数。
-  //对于动态分配的自定义类类型，在delete指针的时候，会调用对应的析构函数
-  //所以说，递归一时爽，析构火葬场。
-	listMe<int> list(0);
-	for (int i = 1; i < 10; i++) {
-		list.Add(i);
-	}
-	listMe<int> copy(list);
-	//list.Show();
-}
-```
-
 # B-Tree
 ## insert方法的一些记录：
 
@@ -311,3 +193,121 @@ AVL树的大部分内容和二叉搜索树是一样的，所以说这里写的�
 这一段话，怎么讲呢，我看的不太明白。作为留存问题等AVL树实现完了我再来解决。
 
 ![](Images/AVL1.png)
+
+# 资源控制：
+关于构造函数，拷贝移动构造函数和析构函数的使用方法：
+注意指针对象，是否需要动态分配？
+
+## 内置类型：
+```cpp
+
+/*
+这里使用了动态分配内置类型成员，也就是说动态分配int类型变量，那么分配的时候发生了什么呢？
+在创建对象的时候我需要调用这个类的构造函数，但这里是内置类型所以不需要有构造函数，
+编译器自动帮助我们创建。使用动态分配只是把内存分配在堆上，而不是栈上
+*/
+class line{
+public:
+  line(int* ptr=nullptr){
+    p=new int;
+    p=ptr;
+  }
+  ~line(){
+    delete p;
+  }
+  line(const line& org){
+    p=new int;
+    *p=*org.p;
+  }
+private:
+  int* p;
+}
+/*
+*/
+```
+
+
+## 自定义类型
+```cpp
+#include<iostream>
+#include<time.h>
+using namespace std;
+template<typename T>
+class listMe {
+public:
+	listMe(T val=0, listMe* c=nullptr):data(val){
+		if (c != nullptr) {
+			child = new listMe(0,nullptr);
+			child = c;
+		}
+		else {
+			child = c;
+		}
+	};
+	listMe(const listMe& org) {
+		if (org.child != nullptr) {
+			child = new listMe();
+			*child = *org.child;
+		}
+		else
+		{
+			child = nullptr;
+		}
+		data = org.data;
+	}
+	~listMe() {
+
+	}
+	T& operator[](size_t i) {
+		T temp=data;
+		listMe* p = this;
+		for (size_t j = 0; j < i; j++) {
+			if (p->child == nullptr) {
+				cout << "Out of range!" << endl;
+				break;
+			}
+			else
+			{
+				temp = p->data;
+				p = p->child;
+			}
+		}
+		return temp;
+	}
+	void Show() {
+		cout << data << ends;
+		if(child != nullptr) {
+			child->Show();
+		}
+	}
+	void Add(T val) {
+		if (child == nullptr) {
+			listMe* p = new listMe(val);
+			child = p;
+		}
+		else
+		{
+			child->Add(val);
+		}
+	}
+	void swap(listMe& n1, listMe& n2) {
+		std::swap(n1.data, n2.data);
+		std::swap(n1.child, n2.child);
+	}
+private:
+	listMe<T>* child;
+	T data;
+};
+
+int main() {
+  //main函数中，只会调用两个析构函数，在Add方法中加上去的都不需要调用析构函数。
+  //对于动态分配的自定义类类型，在delete指针的时候，会调用对应的析构函数
+  //所以说，递归一时爽，析构火葬场。
+	listMe<int> list(0);
+	for (int i = 1; i < 10; i++) {
+		list.Add(i);
+	}
+	listMe<int> copy(list);
+	//list.Show();
+}
+```
